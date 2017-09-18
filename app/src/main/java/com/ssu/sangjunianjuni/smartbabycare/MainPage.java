@@ -51,6 +51,9 @@ import kr.re.nsr.crypto.symm.LEA;
 public class MainPage extends BlunoLibrary {
 
     private String USER_ID;
+    private String NAME;
+    private String HEIGHT;
+    private String WEIGHT;
 
     Button measureBtn;
     //블루투스 수신 테스트용 텍스트들
@@ -78,7 +81,9 @@ public class MainPage extends BlunoLibrary {
         //intent로 넘어온 USER_ID 값
         Intent intent = getIntent();
         USER_ID = intent.getStringExtra("USER_ID");
-
+        NAME = intent.getStringExtra("NAME");
+        HEIGHT = intent.getStringExtra("HEIGHT");
+        WEIGHT = intent.getStringExtra("WEIGHT");
         //블루투스 관련 설정
         onCreateProcess();                                                        //onCreate Process by BlunoLibrary
         serialBegin(115200);
@@ -116,6 +121,9 @@ public class MainPage extends BlunoLibrary {
                         drawerlayout1.closeDrawer(GravityCompat.START);
                         Intent main_to_analysis = new Intent(getApplicationContext(), AnalysisPage.class);
                         main_to_analysis.putExtra("USER_ID", USER_ID);
+                        main_to_analysis.putExtra("NAME", NAME);
+                        main_to_analysis.putExtra("HEIGHT", HEIGHT);
+                        main_to_analysis.putExtra("WEIGHT", WEIGHT);
                         startActivity(main_to_analysis);
                         break;
                     case 2:
@@ -183,6 +191,7 @@ public class MainPage extends BlunoLibrary {
                 dbhelper.insert("2017/09/16", "04:03:03");
                 dbhelper.insert("2017/09/16", "05:03:03");
                 dbhelper.insert("2017/09/17", "06:03:03");
+                dbhelper.insert("2017/09/17", "07:03:03");
                 dbhelper.insert("2017/09/18", "07:03:03");
                 dbhelper.insert("2017/09/18", "08:03:03");
                 dbhelper.insert("2017/09/18", "09:03:03");
@@ -335,11 +344,9 @@ public class MainPage extends BlunoLibrary {
         //Toast.makeText(getApplicationContext(), "before:"+thestring, Toast.LENGTH_SHORT).show();
 
         /*BlockCipherMode cipher = new LEA.ECB();
-
         Log.e("TAG", "before:"+string+": "+(int)string.charAt(0));
         //Toast.makeText(getApplicationContext(), "before:"+string+": "+(int)string.charAt(0), Toast.LENGTH_SHORT).show();
         byte[] key = {0x7f, 0x7e, 0x7d, 0x7c, 0x7b, 0x7a, 0x79, 0x78, 0x77, 0x76, 0x75, 0x74, 0x73, 0x72, 0x71, 0x70};
-
         byte[] test;
         //test=theint;
         //test = inttobyte(theint);
@@ -349,16 +356,12 @@ public class MainPage extends BlunoLibrary {
         Log.e("TAG", "before decrypt:"+test);
         //Toast.makeText(getApplicationContext(), "before decrypt:"+test, Toast.LENGTH_SHORT).show();
         System.out.println(test.length);
-
         /*cipher.init(BlockCipher.Mode.ENCRYPT, key);
-
         byte[] enc = cipher.update(test);
         String text = new String(enc);
         Toast.makeText(getApplicationContext(), "encrypt:"+text, Toast.LENGTH_SHORT).show();
         cipher.init(BlockCipher.Mode.DECRYPT, key);
-
         byte[] dec = cipher.update(test);
-
         String text = new String(dec);
         Log.e("TAG", "decrypt:"+dec);
         //Toast.makeText(getApplicationContext(), "decrypt:"+dec, Toast.LENGTH_SHORT).show();

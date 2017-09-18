@@ -103,20 +103,15 @@ public class LoginPage extends AppCompatActivity {
     private class PHPDown extends AsyncTask<String, Integer, String> {
         private String USER_ID;
         private String PASSWORD;
-
         @Override
         protected String doInBackground(String... params) {
-
             StringBuilder jsonHtml = new StringBuilder();
-
             try {
                         URL url = new URL(params[0]);
                         HttpURLConnection conn = (HttpURLConnection)url.openConnection();
-
                         if (conn != null) {
                             conn.setConnectTimeout(10000);
                             conn.setUseCaches(false);
-
                             if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
                                 BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
                                 for (;;) {
@@ -128,13 +123,11 @@ public class LoginPage extends AppCompatActivity {
                     }
                     conn.disconnect();
                 }
-
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
             return jsonHtml.toString();
         }
-
         @Override
         protected void onPostExecute(String str){
             try {
@@ -145,7 +138,6 @@ public class LoginPage extends AppCompatActivity {
                     USER_ID = jo.getString("USER_ID");
                     PASSWORD = jo.getString("PASSWORD");
                     listItem.add(new ListItem(USER_ID, PASSWORD));
-
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -158,17 +150,14 @@ public class LoginPage extends AppCompatActivity {
                 inputPassword.setText(pref.getString("password",""));
                 autoLogin.setChecked(true);
             }
-
             //로그인 체크
             login_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
                     //자동 로그인
                     if(autoLogin.isChecked()) {
                         String id = inputId.getText().toString();
                         String password = inputPassword.getText().toString();
-
                         editor.putString("id", id);
                         editor.putString("password", password);
                         editor.putBoolean("autoLogin", true);
@@ -180,11 +169,9 @@ public class LoginPage extends AppCompatActivity {
                     for (int i =0;i<listItem.size();i++) {
                         String tmpID = listItem.get(i).getData(0);
                         String tmpPW = listItem.get(i).getData(1);
-
                         if(tmpID.equals(inputId.getText().toString())){
                             if(tmpPW.equals(inputPassword.getText().toString())){
                                 loginFlag = 1;
-
                                 break;
                             }
                         }
@@ -208,6 +195,9 @@ public class LoginPage extends AppCompatActivity {
 
         private String USER_ID;
         private String PASSWORD;
+        private String NAME;
+        private String HEIGHT;
+        private String WEIGHT;
         private String PHOTO_URI;
         @Override
         protected String doInBackground(String... params) {
@@ -248,8 +238,11 @@ public class LoginPage extends AppCompatActivity {
                     JSONObject jo = ja.getJSONObject(i);
                     USER_ID = jo.getString("USER_ID");
                     PASSWORD = jo.getString("PASSWORD");
+                    NAME = jo.getString("NAME");
+                    HEIGHT = jo.getString("HEIGHT");
+                    WEIGHT = jo.getString("WEIGHT");
                     PHOTO_URI = jo.getString("PHOTO_URI");
-                    listItem.add(new ListItem(USER_ID, PASSWORD, PHOTO_URI));}
+                    listItem.add(new ListItem(USER_ID, PASSWORD, NAME, HEIGHT, WEIGHT, PHOTO_URI));}
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -262,6 +255,9 @@ public class LoginPage extends AppCompatActivity {
                 inputPassword.setText(pref.getString("password",""));
                 autoLogin.setChecked(true);
             }
+
+            // 아이디에 맞는 아이 이름 키 몸무게 불러오기 위한 변수
+            final int[] getNum = {0};
 
             //로그인 체크
             login_btn.setOnClickListener(new View.OnClickListener() {
@@ -288,7 +284,7 @@ public class LoginPage extends AppCompatActivity {
                         if(tmpID.equals(inputId.getText().toString())){
                             if(tmpPW.equals(inputPassword.getText().toString())){
                                 loginFlag = 1;
-
+                                getNum[0] = i;
                                 break;
                             }
                         }
@@ -300,6 +296,9 @@ public class LoginPage extends AppCompatActivity {
                         editor_not_auto.commit();
                         Intent intent = new Intent(LoginPage.this, MainPage.class);
                         intent.putExtra("USER_ID", inputId.getText().toString());
+                        intent.putExtra("NAME", listItem.get(getNum[0]).getData(2));
+                        intent.putExtra("HEIGHT", listItem.get(getNum[0]).getData(3));
+                        intent.putExtra("WEIGHT", listItem.get(getNum[0]).getData(4));
                         startActivity(intent);
                         finish();
 

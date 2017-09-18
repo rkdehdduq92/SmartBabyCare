@@ -127,6 +127,7 @@ public class BlueToothDBHelper extends SQLiteOpenHelper {
         Cursor cursor=db.rawQuery("SELECT * FROM POOPINFO", null);
         while(cursor.moveToNext()){
             result=result.concat(cursor.getString(1));
+            result=result.concat("|");
             result=result.concat(cursor.getString(2));
             result=result.concat("\n");
         }

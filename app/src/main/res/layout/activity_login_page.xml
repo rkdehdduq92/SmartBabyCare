@@ -105,16 +105,16 @@
                     android:text="@string/btn_login"
                     android:src="@drawable/login_0064a2"/>
         -->
-                <CheckBox
-                    android:text="자동로그인"
-                    android:textSize="15sp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:layout_gravity="center"
-                    android:textColor="#88878C"
-                    android:buttonTint="#88878C"
-                    android:id="@+id/autoLogin" />
+        <CheckBox
+            android:id="@+id/autoLogin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:buttonTint="#88878C"
+            android:text="ID/PW 기억"
+            android:textColor="#88878C"
+            android:textSize="15sp" />
 
                 <Button
                     android:id="@+id/btnRegister"

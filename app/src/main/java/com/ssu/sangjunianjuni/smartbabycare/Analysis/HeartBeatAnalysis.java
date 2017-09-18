@@ -46,7 +46,7 @@ public class HeartBeatAnalysis extends AppCompatActivity {
         String heart=dbhelper.getheartbeat();
 
         int heartbeatrecently=Integer.parseInt(heart);
-        graphic.getdata(70.0F, 150.0F, 100.0F, 140.0F, heartbeatrecently);
+        graphic.getdata(50.0F, 140.0F, 70.0F, 120.0F, heartbeatrecently, "심박수 평균");
 
         recentheartbeat=(TextView)findViewById(R.id.recentheartbeat);
         recentheartbeat.setText("최근 측정 심박수 : "+Integer.toString(heartbeatrecently));

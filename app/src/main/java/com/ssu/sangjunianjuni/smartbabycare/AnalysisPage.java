@@ -1,38 +1,44 @@
 package com.ssu.sangjunianjuni.smartbabycare;
 
-        import android.content.Intent;
-        import android.icu.text.SimpleDateFormat;
-        import android.os.Build;
-        import android.support.annotation.RequiresApi;
-        import android.support.v4.view.GravityCompat;
-        import android.support.v4.widget.DrawerLayout;
-        import android.support.v7.app.ActionBarDrawerToggle;
-        import android.support.v7.app.AppCompatActivity;
-        import android.os.Bundle;
-        import android.support.v7.widget.Toolbar;
-        import android.view.View;
-        import android.widget.AdapterView;
-        import android.widget.ArrayAdapter;
-        import android.widget.ListView;
-        import android.widget.RelativeLayout;
-        import android.widget.Toast;
+import android.content.Intent;
+import android.icu.text.SimpleDateFormat;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.Toast;
 
-        import com.ssu.sangjunianjuni.smartbabycare.Analysis.AnalysisSpecificGraphic;
-        import com.ssu.sangjunianjuni.smartbabycare.Analysis.HeartBeatAnalysis;
-        import com.ssu.sangjunianjuni.smartbabycare.Analysis.HeightWeightAnalysis;
-        import com.ssu.sangjunianjuni.smartbabycare.Analysis.PoopAnalysis;
-        import com.ssu.sangjunianjuni.smartbabycare.BabyDiary.BabyDiaryPage;
-        import com.ssu.sangjunianjuni.smartbabycare.babyboard.BabyBoardPage;
-        import com.ssu.sangjunianjuni.smartbabycare.BlunoBluetooth.BlueToothDBHelper;
-        import com.ssu.sangjunianjuni.smartbabycare.BlunoBluetooth.SmartBandDBHelper;
+import com.ssu.sangjunianjuni.smartbabycare.Analysis.AnalysisHWText;
+import com.ssu.sangjunianjuni.smartbabycare.Analysis.AnalysisSpecificGraphic;
+import com.ssu.sangjunianjuni.smartbabycare.Analysis.HeartBeatAnalysis;
+import com.ssu.sangjunianjuni.smartbabycare.Analysis.HeightWeightAnalysis;
+import com.ssu.sangjunianjuni.smartbabycare.Analysis.PoopAnalysis;
+import com.ssu.sangjunianjuni.smartbabycare.BabyDiary.BabyDiaryPage;
+import com.ssu.sangjunianjuni.smartbabycare.babyboard.BabyBoardPage;
+import com.ssu.sangjunianjuni.smartbabycare.BlunoBluetooth.BlueToothDBHelper;
+import com.ssu.sangjunianjuni.smartbabycare.BlunoBluetooth.SmartBandDBHelper;
 
-        import java.util.Date;
-        import java.util.StringTokenizer;
+import java.util.Date;
+import java.util.StringTokenizer;
 //분석 기본 페이지
 public class AnalysisPage extends AppCompatActivity {
     private AnalysisSpecificGraphic heartbeatgraphic, poopgraphic;
+    private AnalysisHWText hwtext;
 
     private String USER_ID;
+    private String NAME;
+    private String HEIGHT;
+    private String WEIGHT;
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -43,6 +49,9 @@ public class AnalysisPage extends AppCompatActivity {
         // 사용자 아이디 저장
         Intent getUSER_ID = getIntent();
         USER_ID = getUSER_ID.getStringExtra("USER_ID");
+        NAME = getUSER_ID.getStringExtra("NAME");
+        HEIGHT = getUSER_ID.getStringExtra("HEIGHT");
+        WEIGHT = getUSER_ID.getStringExtra("WEIGHT");
 
         Toast.makeText(getApplicationContext(), ""+USER_ID, Toast.LENGTH_SHORT).show();
 
@@ -108,22 +117,24 @@ public class AnalysisPage extends AppCompatActivity {
         //각 relativelayout에 그래픽 설정
         heartbeatgraphic=(AnalysisSpecificGraphic)findViewById(R.id.heartbeatAnalysisGuiOutside);
         poopgraphic=(AnalysisSpecificGraphic)findViewById(R.id.poopAnalysisGuiOutside);
+        hwtext=(AnalysisHWText)findViewById(R.id.HWanalysisText);
         BlueToothDBHelper dbhelper=new BlueToothDBHelper(getApplicationContext(), "poopinfo.db", null, 1);
         SimpleDateFormat timeformat=new SimpleDateFormat("YYYY/MM/dd");
         String time=timeformat.format(new Date(System.currentTimeMillis()));
         int poopcounttoday=dbhelper.getcount(time);
-        poopgraphic.getdata(0.0F, 6.0F, 0.5F, 4.0F, (float)poopcounttoday);
+        poopgraphic.getdata(0.0F, 6.0F, 0.5F, 4.0F, (float)poopcounttoday, "일일 배변량");
         SmartBandDBHelper dbhelper2=new SmartBandDBHelper(getApplicationContext(), "smartinfo.db", null, 1);
         String heart=dbhelper2.getheartbeat();
         StringTokenizer str=new StringTokenizer(heart, "\n");
         heart=str.nextToken();
         int heartbeatrecently=Integer.parseInt(heart.trim());
-        heartbeatgraphic.getdata(70.0F, 150.0F, 100.0F, 140.0F, heartbeatrecently);
+        heartbeatgraphic.getdata(50.0F, 140.0F, 70.0F, 120.0F, heartbeatrecently, "심박수 평균");
+        Log.e("TAG","wtf:"+HEIGHT+" "+WEIGHT);
+        hwtext.getdata(HEIGHT, WEIGHT, NAME);
         //각 relativelayout에 대해 listener 설정, 터치시 상세분석 액티비티로 넘어간다
         RelativeLayout heartbeat=(RelativeLayout)findViewById(R.id.heartbeat);
         RelativeLayout poop=(RelativeLayout)findViewById(R.id.poop);
         RelativeLayout heightweight=(RelativeLayout)findViewById(R.id.heightweight);
-        RelativeLayout totalall=(RelativeLayout)findViewById(R.id.totalall);
 
         heartbeat.setOnClickListener(new View.OnClickListener() {//심박수
             @Override
@@ -150,13 +161,6 @@ public class AnalysisPage extends AppCompatActivity {
                 Intent heartbeatanalysis=new Intent(getApplicationContext(), HeightWeightAnalysis.class);
                 heartbeatanalysis.putExtra("USER_ID", USER_ID);
                 startActivity(heartbeatanalysis);//시간표 액티비티로 넘어감
-            }
-        });
-
-        totalall.setOnClickListener(new View.OnClickListener() {//전체분석
-            @Override
-            public void onClick(View view) {
-                drawerlayout1.closeDrawer(GravityCompat.START);
             }
         });
     }

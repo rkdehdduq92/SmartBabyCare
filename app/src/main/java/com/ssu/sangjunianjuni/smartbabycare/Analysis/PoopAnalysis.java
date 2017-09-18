@@ -13,6 +13,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
@@ -23,6 +25,9 @@ import com.ssu.sangjunianjuni.smartbabycare.ListItem;
 import com.ssu.sangjunianjuni.smartbabycare.R;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Locale;
 import java.util.StringTokenizer;
@@ -56,7 +61,7 @@ public class PoopAnalysis extends AppCompatActivity {
         String timehour=timeformat2.format(new Date(System.currentTimeMillis()));
 
         int poopcounttoday=dbhelper.getcount(time);
-        graphic.getdata(0.0F, 6.0F, 0.5F, 4.0F, (float)poopcounttoday);
+        graphic.getdata(0.0F, 6.0F, 0.5F, 4.0F, (float)poopcounttoday, "일일 배변량");
         //addgraph(box, graphic);
 
         recentpoop=(TextView)findViewById(R.id.recentpoop);
@@ -82,6 +87,68 @@ public class PoopAnalysis extends AppCompatActivity {
 
         poopanalysisresult.setText("분석 결과"+"\n"+result);
 
+        // 오늘 날짜 구하기
+        SimpleDateFormat today1 = new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault());
+        Calendar calendar = Calendar.getInstance(); // 오늘날짜
+        String todayDate = today1.format(calendar.getTime());
+
+        // 해당 요일별 그래프에 추가되는 데이터의 숫자 설정
+        int graphSize = 0;
+        String todayStr = null;
+        try {
+            todayStr = getDateDay(todayDate, "yyyy/MM/dd");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        switch (todayStr) {
+            case "일":
+                graphSize = 1;
+                break;
+            case "월":
+                graphSize = 2;
+                break;
+            case "화":
+                graphSize = 3;
+                break;
+            case "수":
+                graphSize = 4;
+                break;
+            case "목":
+                graphSize = 5;
+                break;
+            case "금":
+                graphSize = 6;
+                break;
+            case "토":
+                graphSize = 7;
+                break;
+        }
+
+        // 전체 배변량 리스트로 저장
+        ArrayList<String> poopList = new ArrayList<>();
+        StringTokenizer st = new StringTokenizer(dbhelper.getResult(), "||\n");
+        while(st.hasMoreElements()) {
+            poopList.add(st.nextToken());
+            st.nextToken();
+        }
+        // 오늘부터 지난주 일요일까지 배변량 저장
+        int[] poopDayCount = new int[graphSize];
+        int flag = 0;
+        String tempDate = todayDate;
+        for (int i = poopList.size()-1; i >= 0; i--) {
+            if(tempDate.equals(poopList.get(i))) {
+                poopDayCount[flag]++;
+            } else {
+                tempDate = poopList.get(i);
+                flag++;
+                if(flag == graphSize) {
+                    break;
+                } else {
+                    poopDayCount[flag]++;
+                }
+
+            }
+        }
 
         // 그래프 예제
         // 오늘 날짜 불러오기
@@ -94,15 +161,47 @@ public class PoopAnalysis extends AppCompatActivity {
 
 
         ArrayList<String>labels = new ArrayList<String>();
-        for(int i = 1; i <= Integer.parseInt(day); i++) {
+        /*for(int i = 1; i <= Integer.parseInt(day); i++) {
             labels.add(String.valueOf(i));
             System.out.println("day: "+String.valueOf(i));
-        }
-        ArrayList<BarEntry> entries = new ArrayList<>();
-        //for(int i = 0; i < Integer.parseInt(day); i++) {
-        entries.add(new BarEntry(1, 3));
+        }*/
+        labels.add("일");
+        labels.add("월");
+        labels.add("화");
+        labels.add("수");
+        labels.add("목");
+        labels.add("금");
+        labels.add("토");
 
-        //}
+        ArrayList<BarEntry> entries = new ArrayList<>();
+        /*
+        entries.add(new BarEntry(6, 0));
+        entries.add(new BarEntry(1, 1));
+        entries.add(new BarEntry(7, 2));
+        entries.add(new BarEntry(2, 3));
+        entries.add(new BarEntry(3, 4));
+        entries.add(new BarEntry(5, 5));
+        entries.add(new BarEntry(1, 6));
+        */
+        // 오늘부터 지난주 일요일까지 배변 횟수 저장
+        int j = 0;
+        for(int i = poopDayCount.length -1 ; i >= 0 ; i--) {
+            entries.add(new BarEntry(poopDayCount[i], j));
+            j++;
+        }
+        // 나머지 0으로 초기화화
+        for(int i = j + 1; i < 7; i++) {
+            entries.add(new BarEntry(0, j));
+        }
+
+        // x축 정렬
+        Collections.sort(entries, new Comparator<BarEntry>() {
+            @Override
+            public int compare(BarEntry t0, BarEntry t1) {
+                return String.valueOf(t0.getXIndex()).compareTo(String.valueOf(t1.getXIndex()));
+            }
+        });
+
         BarChart barChart = (BarChart) findViewById(R.id.barchart);
 
         BarDataSet barDataSet = new BarDataSet(entries, "배변 횟수");
@@ -120,25 +219,57 @@ public class PoopAnalysis extends AppCompatActivity {
         YAxis rightAxis = barChart.getAxisRight();
         rightAxis.setDrawLabels(false);
 
-        barDataSet.setColor(Color.rgb(240,215,210));
-        barChart.setDescription(month+"월 배변");
-        barChart.setData(barData);
-/*
-        //리스트뷰
-        pooplistview=(ListView)findViewById(R.id.pooplist);
-        adapter = new PoopAdapter();
-        pooplistview.setAdapter(adapter);
-        fromdb=dbhelper.getResult();
-        StringTokenizer str=new StringTokenizer(fromdb, "\n");
-        while(str.hasMoreTokens()){
-            String tim=str.nextToken();
-            //Toast.makeText(getApplicationContext(), title+" "+time+" "+daily+" "+onoff, Toast.LENGTH_SHORT).show();
-            listitem.add(new ListItem(tim));
-            int i=listitem.size()-1;
-            adapter.addItem(listitem.get(i).getData(0));
-        }
-*/
+        barChart.setDragEnabled(false);
+        barChart.setScaleEnabled(false);
+        barChart.setPinchZoom(true);
 
+        XAxis xAxis = barChart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+
+        barChart.getLegend().setPosition(Legend.LegendPosition.ABOVE_CHART_RIGHT);
+
+        barDataSet.setColor(Color.rgb(240,215,210));
+        barChart.setData(barData);
+
+
+    }
+
+    // 날짜에 해당하는 요일 구하기
+    public static String getDateDay(String date, String dateType) throws Exception {
+
+        String day = "";
+
+        java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat(dateType);
+        Date nDate = dateFormat.parse(date);
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(nDate);
+
+        int dayNum = cal.get(Calendar.DAY_OF_WEEK);
+        switch (dayNum) {
+            case 1:
+                day = "일";
+                break;
+            case 2:
+                day = "월";
+                break;
+            case 3:
+                day = "화";
+                break;
+            case 4:
+                day = "수";
+                break;
+            case 5:
+                day = "목";
+                break;
+            case 6:
+                day = "금";
+                break;
+            case 7:
+                day = "토";
+                break;
+        }
+        return day;
     }
 
     public boolean onKeyDown(int keyCode, KeyEvent event)
