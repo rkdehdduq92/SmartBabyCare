@@ -160,6 +160,33 @@ public class MainPage extends BlunoLibrary {
                     serialSend("start");
                 }*/
 
+
+                //임시 데이터 삽입 코드
+                /*String tempdate="";
+                String temptime="";
+                dateformat=new SimpleDateFormat("YYYY/MM/dd");
+                timeformat = new SimpleDateFormat("HH:mm:ss");
+                tempdate=dateformat.format(new Date(System.currentTimeMillis()));
+                temptime = timeformat.format(new Date(System.currentTimeMillis()));
+                dbhelper.insert("2017/09/13", "01:01:01");
+                dbhelper.insert("2017/09/13", "02:02:02");
+                dbhelper.insert("2017/09/14", "03:03:03");
+                dbhelper.insert("2017/09/14", "04:01:01");
+                dbhelper.insert("2017/09/14", "05:02:02");
+                dbhelper.insert("2017/09/14", "06:03:03");
+                dbhelper.insert("2017/09/15", "01:01:01");
+                dbhelper.insert("2017/09/15", "02:02:02");
+                dbhelper.insert("2017/09/15", "03:03:03");
+                dbhelper.insert("2017/09/15", "04:01:01");
+                dbhelper.insert("2017/09/15", "05:02:02");
+                dbhelper.insert("2017/09/16", "03:03:03");
+                dbhelper.insert("2017/09/16", "04:03:03");
+                dbhelper.insert("2017/09/16", "05:03:03");
+                dbhelper.insert("2017/09/17", "06:03:03");
+                dbhelper.insert("2017/09/18", "07:03:03");
+                dbhelper.insert("2017/09/18", "08:03:03");
+                dbhelper.insert("2017/09/18", "09:03:03");
+                dbhelper.insert(tempdate, temptime);*/
             }
         });
         dbhelper = new BlueToothDBHelper(getApplicationContext(), "poopinfo.db", null, 1);

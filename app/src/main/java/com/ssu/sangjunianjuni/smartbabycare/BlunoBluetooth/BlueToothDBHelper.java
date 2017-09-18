@@ -58,10 +58,9 @@ public class BlueToothDBHelper extends SQLiteOpenHelper {
         Cursor cursor=db.rawQuery("SELECT * FROM POOPINFO", null);
         String dbdate="", dbtime="";
         if(cursor.getCount()!=0){
-            while(cursor.moveToNext()){
-                dbdate=cursor.getString(1);
-                dbtime=cursor.getString(2);
-            }
+            cursor.moveToLast();
+            dbdate=cursor.getString(1);
+            dbtime=cursor.getString(2);
             //cursor.moveToNext();
             //String dbtime=cursor.getString(1);
             //StringTokenizer str=new StringTokenizer(dbtime, " ");
@@ -78,21 +77,25 @@ public class BlueToothDBHelper extends SQLiteOpenHelper {
         String recentdate="", lastdate="";
         int date=0;
         if(cursor.getCount()!=0){
-            if(cursor.getCount()==1){
+            cursor.moveToFirst();
+            recentdate=cursor.getString(1);
+            cursor.moveToLast();
+            lastdate=cursor.getString(1);
+            /*if(cursor.getCount()==1){
                 cursor.moveToNext();
                 lastdate=cursor.getString(1);
                 recentdate=cursor.getString(1);
             }
             else{
                 cursor.moveToNext();
-                lastdate=cursor.getString(1);
+                recentdate=cursor.getString(1);
                 while(cursor.moveToNext()){
-                    recentdate=cursor.getString(1);
+                    lastdate=cursor.getString(1);
                 }
-            }
-
-            StringTokenizer str1=new StringTokenizer(lastdate, "/");
-            StringTokenizer str2=new StringTokenizer(recentdate, "/");
+            }*/
+            Log.e("TAG", "lastdate:"+lastdate+" recentdate:"+recentdate);
+            StringTokenizer str1=new StringTokenizer(recentdate, "/");
+            StringTokenizer str2=new StringTokenizer(lastdate, "/");
             String lastyear=str1.nextToken();
             String lastmonth=str1.nextToken();
             String lastday=str1.nextToken();
@@ -108,11 +111,12 @@ public class BlueToothDBHelper extends SQLiteOpenHelper {
             int day=Integer.parseInt(lastday.trim())-Integer.parseInt(recentday.trim());
             date=year*365+month*30+day;
             Log.e("TAG", "year:"+year+" month:"+month+" day:"+day);
-        }
-
-        Log.e("TAG", "cursor:"+cursor.getCount()+" date:"+date);
-        if(date==0)
+        } else{
             date=1;
+        }
+        if(date<0)
+            date*=-1;
+        Log.e("TAG", "cursor:"+cursor.getCount()+" date:"+date);
         return cursor.getCount()/date;
     }
 

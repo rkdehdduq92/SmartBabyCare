@@ -68,16 +68,18 @@ public class PoopAnalysis extends AppCompatActivity {
         useraveragepoop.setText("사용자 평균 일 배변량:"+Integer.toString(averagepoop));
 
         String result="";
-        if(poopcounttoday>0.5&&poopcounttoday<4)
-            result="정상입니다";
-        else if(Integer.parseInt(timehour)<=20){
-            Toast.makeText(getApplicationContext(), "time to wait", Toast.LENGTH_SHORT).show();
-            result="하루가 기니 차분히 기다려 보세요";
+        if(poopcounttoday>0.5&&poopcounttoday<4) {
+            result = "정상입니다";
+        } else{
+            if(Integer.parseInt(timehour)<=20&&poopcounttoday<6){
+                Toast.makeText(getApplicationContext(), "time to wait", Toast.LENGTH_SHORT).show();
+                result="하루가 기니 차분히 기다려 보세요";
+            }else{
+                Toast.makeText(getApplicationContext(), "time to hospital", Toast.LENGTH_SHORT).show();
+                result="병원에 가 보세요 배탈입니다";
+            }
         }
-        else{
-            Toast.makeText(getApplicationContext(), "time to hospital", Toast.LENGTH_SHORT).show();
-            result="병원에 가 보세요";
-        }
+
         poopanalysisresult.setText("분석 결과"+"\n"+result);
 
 
