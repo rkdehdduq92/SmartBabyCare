@@ -128,7 +128,8 @@ public class AnalysisPage extends AppCompatActivity {
         StringTokenizer str=new StringTokenizer(heart, "\n");
         heart=str.nextToken();
         int heartbeatrecently=Integer.parseInt(heart.trim());
-        heartbeatgraphic.getdata(50.0F, 140.0F, 70.0F, 120.0F, heartbeatrecently, "심박수 평균");
+        int averageheartbeat=dbhelper2.getaverageheartbeat();
+        heartbeatgraphic.getdata(50.0F, 140.0F, 70.0F, 120.0F, averageheartbeat, "심박수 평균");
         Log.e("TAG","wtf:"+HEIGHT+" "+WEIGHT);
         hwtext.getdata(HEIGHT, WEIGHT, NAME);
         //각 relativelayout에 대해 listener 설정, 터치시 상세분석 액티비티로 넘어간다

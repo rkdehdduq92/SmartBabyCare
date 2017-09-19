@@ -87,19 +87,19 @@ public class AnalysisSpecificGraphic extends View {
 
         //하단부 분위 선, 텍스트(처음, 4분의1, 중간, 4분의3, 끝지점 표시)\
         canvas.drawLine(framewidth*0.1F, frameheight/5*3.0F, framewidth*0.1F, frameheight/5*3.25F, paint3);
-        canvas.drawText(Float.toString(min), framewidth*0.1F, frameheight/5*3.5F, paint3);
+        canvas.drawText(Float.toString(min), framewidth*0.1F, frameheight/5*3.75F, paint3);
 
         canvas.drawLine(framewidth*0.3F, frameheight/5*3.0F, framewidth*0.3F, frameheight/5*3.25F, paint3);
-        canvas.drawText(Float.toString(okmin), framewidth*0.3F, frameheight/5*3.5F, paint3);
+        canvas.drawText(Float.toString(okmin), framewidth*0.3F, frameheight/5*3.75F, paint3);
 
         canvas.drawLine(framewidth*0.5F, frameheight/5*3.0F, framewidth*0.5F, frameheight/5*3.25F, paint3);
-        canvas.drawText(Float.toString((okmin+okmax)/2), framewidth*0.5F, frameheight/5*3.5F, paint3);
+        canvas.drawText(Float.toString((okmin+okmax)/2), framewidth*0.5F, frameheight/5*3.75F, paint3);
 
         canvas.drawLine(framewidth*0.7F, frameheight/5*3.0F, framewidth*0.7F, frameheight/5*3.25F, paint3);
-        canvas.drawText(Float.toString(okmax), framewidth*0.7F, frameheight/5*3.5F, paint3);
+        canvas.drawText(Float.toString(okmax), framewidth*0.7F, frameheight/5*3.75F, paint3);
 
         canvas.drawLine(framewidth*0.9F, frameheight/5*3.0F, framewidth*0.9F, frameheight/5*3.25F, paint3);
-        canvas.drawText(Float.toString(max), framewidth*0.9F, frameheight/5*3.5F, paint3);
+        canvas.drawText(Float.toString(max), framewidth*0.9F, frameheight/5*3.75F, paint3);
 
     }
 
